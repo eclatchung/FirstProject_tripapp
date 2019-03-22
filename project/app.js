@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 //config *for security*
 const port = process.env.PORT || 3000
 const host = 'localhost' //host ipv6
-//mongoose.Promise = global.Promise;
+
 
 const app = express()
 
@@ -34,6 +34,26 @@ app.listen(port,() => {
 
 
 const mariadb = require('mariadb');
+
+module.exports = function () {
+  var config = require('./config/config.js');    // ./는 현재 디렉토리를 나타냅니다
+  var pool = mariadb.createPool({
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    database: config.database
+  })
+ 
+  return {
+    getConnection: function (callback) {    // connection pool을 생성하여 리턴합니다
+      pool.getConnection(callback);
+    },
+    end: function(callback){
+      pool.end(callback);
+    }
+  }
+}
+
 /*
 async function asyncFunction() {
   let conn;
